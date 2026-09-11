@@ -1,0 +1,118 @@
+// use prisma-next
+
+enum RolUsuario {
+  SOCIO
+  TESORERO
+  COMITE
+  AUDITOR
+  ADMIN
+}
+
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+  BLOQUEADO
+}
+
+enum EstadoEmpleado {
+  ACTIVO
+  INACTIVO
+}
+
+enum EstadoCuentaAhorro {
+  ACTIVA
+  INACTIVA
+  CERRADA
+}
+
+enum PeriodicidadAportacion {
+  SEMANAL
+  QUINCENAL
+  MENSUAL
+}
+
+enum TipoMovimientoAhorro {
+  APORTACION
+  RETIRO
+  RENDIMIENTO
+  AJUSTE
+}
+
+model Usuario {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password_hash String
+  rol           RolUsuario
+  estado        EstadoUsuario @default(ACTIVO)
+
+  empleado_id   String?       @unique
+
+  empleado      Empleado?     @relation(fields: [empleado_id], references: [id])
+
+  creado_en     DateTime      @default(now())
+}
+
+model Empleado {
+  id             String         @id @default(uuid())
+  nombre         String
+  apellidos      String
+  fecha_ingreso  DateTime       @default(now())
+  datos_contacto String?
+  estado         EstadoEmpleado @default(ACTIVO)
+
+  usuario        Usuario?
+  cuentaAhorro   CuentaAhorro?
+
+  aportaciones   Aportacion[]
+  movimientos    MovimientoAhorro[]
+
+  creado_en      DateTime       @default(now())
+}
+
+model CuentaAhorro {
+  id                     String                 @id @default(uuid())
+  empleado_id            String                 @unique
+  saldo                  Decimal                
+  aportacion_obligatoria Decimal
+  periodicidad           PeriodicidadAportacion @default(SEMANAL)
+  estado                 EstadoCuentaAhorro     @default(ACTIVA)
+
+  empleado               Empleado               @relation(fields: [empleado_id], references: [id])
+  aportaciones           Aportacion[]
+  movimientos            MovimientoAhorro[]
+
+  creado_en              DateTime               @default(now())
+}
+
+model Aportacion {
+  id               String   @id @default(uuid())
+  cuenta_ahorro_id String
+  empleado_id      String
+  monto            Decimal
+  fecha            DateTime @default(now())
+  periodo          String?
+  observaciones    String?
+
+  cuentaAhorro     CuentaAhorro @relation(fields: [cuenta_ahorro_id], references: [id])
+  empleado         Empleado     @relation(fields: [empleado_id], references: [id])
+
+  creado_en        DateTime @default(now())
+}
+
+model MovimientoAhorro {
+  id               String               @id @default(uuid())
+  cuenta_ahorro_id String
+  empleado_id      String
+  tipo             TipoMovimientoAhorro
+  monto            Decimal
+  saldo_anterior   Decimal
+  saldo_nuevo      Decimal
+  fecha            DateTime             @default(now())
+  referencia       String?
+  observaciones    String?
+
+  cuentaAhorro     CuentaAhorro          @relation(fields: [cuenta_ahorro_id], references: [id])
+  empleado         Empleado              @relation(fields: [empleado_id], references: [id])
+
+  creado_en        DateTime @default(now())
+}
