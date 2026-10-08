@@ -8,14 +8,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma skills sync || exit 0",
     "contract:emit": "prisma contract emit",
-    "dev": "node --loader ts-node/esm src/server.ts",
-    "start": "node --loader ts-node/esm src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@js-temporal/polyfill": "^0.5.1",
+    "@prisma/client": "^7.10.0",
     "@prisma/orm-postgres": "^8.0.0-rc.9",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -23,12 +25,15 @@
   },
   "devDependencies": {
     "@prisma/cli-engine": "^0.2.3",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^22.20.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.20.5",
     "nodemon": "^3.1.14",
     "prisma": "^8.0.0-rc.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }

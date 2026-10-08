@@ -1,3 +1,12 @@
+import { Temporal } from '@js-temporal/polyfill';
+
+// Inyectar Temporal globalmente para que Prisma 8 pueda codificar/decodificar las fechas
+if (!globalThis.Temporal) {
+  (globalThis as any).Temporal = Temporal;
+}
+
+import express from 'express';
+
 import 'dotenv/config';
 import app from './app.js';
 
