@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import empleadosRouter from './routes/empleados.routes.js';
+import authRouter from './routes/auth.routes.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+app.use('/api/auth', authRouter);
 app.use('/api/empleados', empleadosRouter);
 
 export default app;
