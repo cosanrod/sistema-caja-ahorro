@@ -1,3 +1,21 @@
+# Dependencias
 node_modules/
+
+# Archivos compilados
 dist/
+
+# Variables de entorno
 .env
+.env.*
+
+# Excepciones de entorno
+!.env.example
+
+# Respaldos locales
+respaldo-debug/
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store

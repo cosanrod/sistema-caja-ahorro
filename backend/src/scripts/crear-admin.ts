@@ -1,7 +1,14 @@
-
 import 'dotenv/config';
+import { Temporal } from '@js-temporal/polyfill';
 import bcrypt from 'bcryptjs';
 import { db } from '../prisma/db.js';
+
+// Registrar Temporal globalmente para Prisma 8
+const temporalGlobal = globalThis as any;
+
+if (!temporalGlobal.Temporal) {
+  temporalGlobal.Temporal = Temporal;
+}
 
 async function main() {
   const email = process.env['ADMIN_EMAIL']?.trim().toLowerCase();
