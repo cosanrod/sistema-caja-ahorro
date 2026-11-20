@@ -13,6 +13,7 @@ export type Permission =
   | 'ahorro:consultar-global'
   | 'ahorro:registrar-movimientos'
   | 'ahorro:conciliar'
+  | 'ahorro:administrar-cuentas'
 
   // Préstamos
   | 'prestamos:solicitar'

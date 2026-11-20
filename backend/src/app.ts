@@ -3,6 +3,7 @@ import cors from 'cors';
 import empleadosRouter from './routes/empleados.routes.js';
 import authRouter from './routes/auth.routes.js';
 import perfilRouter from './routes/perfil.routes.js';
+import ahorrosRouter from './routes/ahorros.routes.js';
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/empleados', empleadosRouter);
+app.use('/api/ahorros', ahorrosRouter);
 
 export default app;
