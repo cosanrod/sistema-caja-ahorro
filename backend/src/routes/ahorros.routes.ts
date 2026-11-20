@@ -102,6 +102,102 @@ router.get(
 
 
 /**
+ * GET /api/ahorros/mi-cuenta/movimientos
+ * Consultar el historial de movimientos del usuario autenticado.
+ */
+router.get(
+  '/mi-cuenta/movimientos',
+  authorizePermissions('ahorro:consultar-propio'),
+  async (req, res) => {
+    try {
+      const authenticatedReq = req as AuthenticatedRequest;
+      const usuarioAuth = authenticatedReq.usuario;
+
+      if (!usuarioAuth) {
+        return res.status(401).json({
+          ok: false,
+          message: 'Usuario no autenticado',
+        });
+      }
+
+      // Buscar al usuario identificado por el JWT.
+      const usuario = await db.orm.public.Usuario
+        .where({ id: usuarioAuth.id })
+        .first();
+
+      if (!usuario) {
+        return res.status(404).json({
+          ok: false,
+          message: 'Usuario no encontrado',
+        });
+      }
+
+      // Verificar que el usuario continúe activo.
+      if (usuario.estado !== 'ACTIVO') {
+        return res.status(403).json({
+          ok: false,
+          message: 'El usuario no está activo',
+        });
+      }
+
+      // Comprobar que tenga un empleado asociado.
+      if (!usuario.empleado_id) {
+        return res.status(404).json({
+          ok: false,
+          message: 'El usuario no tiene un empleado asociado',
+        });
+      }
+
+      // Buscar al empleado relacionado con el usuario.
+      const empleado = await db.orm.public.Empleado
+        .where({ id: usuario.empleado_id })
+        .first();
+
+      if (!empleado) {
+        return res.status(404).json({
+          ok: false,
+          message: 'No se encontró el empleado asociado',
+        });
+      }
+
+      // Buscar exclusivamente la cuenta del empleado autenticado.
+      const cuenta = await db.orm.public.CuentaAhorro
+        .where({ empleado_id: empleado.id })
+        .first();
+
+      if (!cuenta) {
+        return res.status(404).json({
+          ok: false,
+          message: 'El empleado todavía no tiene una cuenta de ahorro',
+        });
+      }
+
+      // Consultar los movimientos más recientes primero.
+      const movimientos = await db.orm.public.MovimientoAhorro
+        .where({ cuenta_ahorro_id: cuenta.id })
+        .orderBy((movimiento) => movimiento.fecha.desc())
+        .all();
+
+      return res.json({
+        ok: true,
+        data: {
+          movimientos,
+        },
+      });
+    } catch (error) {
+      console.error('Error al consultar movimientos de ahorro:', error);
+
+      return res.status(500).json({
+        ok: false,
+        message: 'Error al consultar el historial de movimientos',
+      });
+    }
+  },
+);
+
+
+
+/**
  * POST /api/ahorros
  * Crear una cuenta de ahorro para un empleado.
  */
